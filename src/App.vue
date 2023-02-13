@@ -16,18 +16,28 @@ export default {
     const client  = connect('mqtt://localhost:8083')
     // eslint-disable-next-line no-debugger
     //debugger
+
+    const onSubscribe=function(error, granted) {
+      if (error) {
+        console.log(`mqtt subscription failed: ${error}`)
+      } else {
+        console.log(`mqtt subscription successful:${granted[0].topic}`)
+      }
+    }
     client.on('connect', function () {
-      client.subscribe('presence', function (err) {
-        if (!err) {
-          client.publish('presence', 'Hello mqtt')
-        }
-      })
+      client.subscribe('presence', onSubscribe)
+      client.publish('presence','i bims')
     })
+
+    client.subscribe('test', { qos: 0 }, onSubscribe)
+
 
     client.on('message', function (topic, message) {
       // message is Buffer
-      console.log(message.toString())
-      client.end()
+      // eslint-disable-next-line no-debugger
+      //debugger
+      console.log('mqtt received: '+message.toString())
+      //client.end()
     })
     return {
       "MQTTClient":client
