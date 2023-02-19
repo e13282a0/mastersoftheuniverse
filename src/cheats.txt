@@ -1,0 +1,2 @@
+# docker image für mosquitto
+docker run --name mosquitto -p 1883:1883  -p 9001:9001 -v c:\docker\mosquitto:/mosquitto/ -v c:\docker\mosquitto\log:/mosquitto/log -v c:\docker\mosquitto\data:/mosquitto/data  eclipse-mosquitto
