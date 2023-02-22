@@ -1,2 +1,5 @@
 # docker image für mosquitto
 docker run --name mosquitto -p 1883:1883  -p 9001:9001 -v c:\docker\mosquitto:/mosquitto/ -v c:\docker\mosquitto\log:/mosquitto/log -v c:\docker\mosquitto\data:/mosquitto/data  eclipse-mosquitto
+
+#docker image für mongo
+docker run -p 27017:27017 --name mongo -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=root mongo:latest
