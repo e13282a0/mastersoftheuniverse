@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 let MembershipFunctionSchema = new Schema({
     variable: {type: String, required: true, max: 100},
+    source:['mqtt','opcua'],
     boundaries:{
         min:Number,
         max:Number

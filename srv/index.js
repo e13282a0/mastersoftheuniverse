@@ -1,6 +1,4 @@
-import express from 'express';
 import bodyParser from "express";
-import membership_function_controller from "./controllers/membershipfunction.controller";
 
 // import socketIO from "socket.io";
 
@@ -21,23 +19,9 @@ export default (app, http) => {
     app.use(bodyParser.urlencoded({extended: false}));
 
     const membership_function_controller = require('./controllers/membershipfunction.controller');
-    app.get('/api/membership_function/index', membership_function_controller.index);
-    app.get('/api/membership_function/:id', membership_function_controller.read);
-    app.post('/api/membership_function/', membership_function_controller.new);
-    app.put('/api/membership_function/:id', membership_function_controller.update);
-    app.delete('/api/membership_function/:id', membership_function_controller.delete);
-    //
-    // app.post('/bar', (req, res) => {
-    //   res.json(req.body);
-    // });
-    //
-    // optional support for socket.io
-    //
-    // let io = socketIO(http);
-    // io.on("connection", client => {
-    //   client.on("message", function(data) {
-    //     // do something
-    //   });
-    //   client.emit("message", "Welcome");
-    // });
+    app.get('/api/membershipfunctions/', membership_function_controller.index);
+    app.get('/api/membershipfunctions/:id', membership_function_controller.read);
+    app.post('/api/membershipfunctions/', membership_function_controller.add);
+    app.put('/api/membershipfunctions/:id', membership_function_controller.update);
+    app.delete('/api/membershipfunctions/:id', membership_function_controller.delete);
 }
