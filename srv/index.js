@@ -1,4 +1,5 @@
 import bodyParser from "express";
+import variables_controller from "./controllers/variables.controller";
 
 // import socketIO from "socket.io";
 
@@ -18,10 +19,10 @@ export default (app, http) => {
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended: false}));
 
-    const membership_function_controller = require('./controllers/membershipfunction.controller');
-    app.get('/api/membershipfunctions/', membership_function_controller.index);
-    app.get('/api/membershipfunctions/:id', membership_function_controller.read);
-    app.post('/api/membershipfunctions/', membership_function_controller.add);
-    app.put('/api/membershipfunctions/:id', membership_function_controller.update);
-    app.delete('/api/membershipfunctions/:id', membership_function_controller.delete);
+    const variables_controller = require('./controllers/variables.controller');
+    app.get('/api/variables/', variables_controller.index);
+    app.post('/api/variables/', variables_controller.add);
+    app.get('/api/variables/:id', variables_controller.read);
+    app.put('/api/variables/:id', variables_controller.update);
+    app.delete('/api/variables/:id', variables_controller.delete);
 }

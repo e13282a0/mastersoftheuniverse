@@ -1,12 +1,39 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <!-- progressbar -->
-  <v-progress-linear v-if="loading" indeterminate color="cyan" />
-  <!-- router view -->
-  <router-view/>
+  <v-app>
+    <!-- progressbar -->
+    <v-progress-linear v-if="loading" indeterminate color="cyan" />
+    <v-navigation-drawer app expand-on-hover rail permanent>
+      <v-list>
+        <v-list-item-media>
+          <v-img :src="require('./assets/Masters_of_the_Universe_Logo_Classic.jpg')"/>
+        </v-list-item-media>
+      </v-list>
+
+      <v-divider></v-divider>
+
+      <v-list density="compact" nav>
+        <v-list-item prepend-icon="mdi-folder" title="My Files" to="/" link></v-list-item>
+        <v-list-item prepend-icon="mdi-account-multiple" title="Shared with me" to="/about" link></v-list-item>
+        <v-list-item prepend-icon="mdi-variable" title="Variables" to="/variables" link></v-list-item>
+        <v-list-item prepend-icon="mdi-calculator-variant-outline" title="Rule Sets" link></v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+
+    <!-- Sizes your content based upon application components -->
+    <v-main>
+      <!-- Provides the application the proper gutter -->
+      <v-container fluid>
+        <!-- If using vue-router -->
+        <router-view></router-view>
+      </v-container>
+    </v-main>
+
+    <v-footer app>
+      <!-- -->
+    </v-footer>
+  </v-app>
+
+
 
 </template>
 <script>
@@ -31,10 +58,11 @@ export default {
     //   console.log('mqtt received: '+message.toString())
     // })
     const store = useStore()
-    store.dispatch("index","membershipfunctions")
+    store.dispatch("index",{target:"variables"})
 
     return {
-      //"MQTTClient":client
+      //"MQTTClient":client,
+      loading:store.state.loading
     }
   },
 }

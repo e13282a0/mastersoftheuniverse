@@ -20,6 +20,7 @@
     "precompiled-mqtt": "^4.3.14-beta",
     "roboto-fontface": "*",
     "uninstall": "^0.0.0",
+    "vee-validate": "^4.7.4",
     "vue": "^3.2.13",
     "vue-progressbar": "^0.7.5",
     "vue-router": "^4.0.3",

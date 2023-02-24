@@ -4,7 +4,7 @@ import axios from "axios";
 export default createStore({
     state: {
         loading:-1,
-        membershipFunctions:[]
+        variables:[]
     },
     getters: {},
     mutations: {
@@ -14,55 +14,55 @@ export default createStore({
         loaded:function(state) {
             state.loading--
         },
-        index:function(state,target,data) {
-          state[target]=data
+        index:function(state,payload) {
+          state[payload.target]=payload.data
         },
-        update:function(state,target,data) {
-            let index = state[target].findIndex((elm) => elm.id === data.id);
+        update:function(state,payload) {
+            let index = state[payload.target].findIndex((elm) => elm._id === payload.data._id);
             if (index > -1) {
-                state[target][index] = data;
+                state[payload.target][index] = payload.data;
             }
         },
-        add:function(state,target,data) {
-            state[target].push(data)
+        add:function(state,payload) {
+            state[payload.target].push(payload.data)
         },
-        delete:function(state,target,id) {
-            let index = state[target].findIndex((elm) => elm.id === id);
+        delete:function(state,payload) {
+            let index = state[payload.target].findIndex((elm) => elm._id === payload.id);
             if (index > -1) {
-                state[target].splice(index, 1);
+                state[payload.target].splice(index, 1);
             }
         },
     },
     actions: {
-        index(context,target) {
+        index(context,payload) {
             context.commit("loading")
-            return axios.get(`/api/${target}`).then((response) => {
+            return axios.get(`/api/${payload.target}`).then((response) => {
                 console.debug(response)
-                context.commit('index', response.data)
+                context.commit('index', {target:payload.target,data:response.data})
                 context.commit("loaded")
             })
         },
-        add(context,target,data){
+        add(context,payload){
             context.commit("loading")
-            return axios.post(`/api/${target}`,data).then((response) => {
+            return axios.post(`/api/${payload.target}`,payload.data).then((response) => {
                 console.debug(response)
-                context.commit('add', response.data)
+                context.commit('add',{target:payload.target, data:response.data})
                 context.commit("loaded")
             })
         },
-        update(context,target,data){
+        update(context,payload){
             context.commit("loading")
-            return axios.put(`/api/${target}/${data.id}`,data).then((response) => {
+            return axios.put(`/api/${payload.target}/${payload.data._id}`,payload.data).then((response) => {
                 console.debug(response)
-                context.commit('update', response.data)
+                context.commit('update',{target:payload.target, data:response.data})
                 context.commit("loaded")
             })
         },
-        delete (context,target,data){
+        delete (context,payload){
             context.commit("loading")
-            return axios.post(`/api/${target}/${data.id}`).then((response) => {
+            return axios.delete(`/api/${payload.target}/${payload.id}`).then((response) => {
                 console.debug(response)
-                context.commit('delete', response.data)
+                context.commit('delete', {target:payload.target,id:response.data})
                 context.commit("loaded")
             })
         },
