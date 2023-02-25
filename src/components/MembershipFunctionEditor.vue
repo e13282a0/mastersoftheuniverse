@@ -19,12 +19,26 @@
       <line :x1="marker.line.x1" :x2="marker.line.x2" :y1="marker.line.y1" :y2="marker.line.y2" stroke="#000" stroke-width="2"/>
       <text :x="marker.label.x" :y="marker.label.y">{{marker.label.text}}</text>
     </g>
+
+    <!-- polygons -->
+    <g :style="`transform: translate(${pos.padding}px, ${pos.padding}px)`">
+      <polygon :points="test" fill="none" stroke="#ccc" stroke-width="2" />
+      <polygon :points="test2" fill="none" stroke="#ccc" stroke-width="2" />
+      <polygon :points="test3" fill="none" stroke="#ccc" stroke-width="2" />
+      <polygon :points="test4" fill="none" stroke="#ccc" stroke-width="2" />
+    </g>
   </svg>
 </template>
 
 <script>
 
 import {reactive} from "vue";
+import Grade from "es6-fuzz/lib/curve/grade";
+import ReverseGrade from "es6-fuzz/lib/curve/reverse-grade";
+import Constant from "es6-fuzz/lib/curve/constant";
+import Trapezoid from "es6-fuzz/lib/curve/trapezoid";
+import Triangle from "es6-fuzz/lib/curve/triangle";
+import Sigmoid from "es6-fuzz/lib/curve/sigmoid";
 
 export default {
   name: "MembershipFunctionEditor",
@@ -34,7 +48,62 @@ export default {
     const padding = 20
     const offset = 8
 
+
+    const membershipFunction = function (type, arr) {
+      //const constant=[0]
+      //const grade=[0,10]
+      //const reverseGrade=[0,10] ??
+      //const trapezoid=[0,10,20,30]
+      //const triangle=[10,20,30]
+      //const sigmoid=[0,10]
+
+      let typeObject
+      switch (type) {
+        case 'constant':
+          typeObject = new Constant(arr[0])
+          break
+        case 'grade':
+          typeObject = new Grade(arr[0], arr[1])
+          break
+        case 'reverse':
+          typeObject = new ReverseGrade(arr[0], arr[1])
+          break
+        case 'trapezoid':
+          typeObject = new Trapezoid(arr[0], arr[1], arr[2], arr[3])
+          break
+        case 'triangle':
+          typeObject = new Triangle(arr[0], arr[1], arr[2])
+          break
+        case 'sigmoid':
+          typeObject = new Sigmoid(arr[0], arr[1])
+          break
+
+      }
+      return [...Array(101).keys()].map(function (elm) {
+        return {
+          x: elm,
+          y: typeObject.fuzzify(elm)
+        }
+      })
+    }
+
+    const polygonize=function(arr, xMax, yMax){
+      let result =`0,${yMax}`
+      arr.forEach(function(elm){
+        result=`${result} ${(elm.x/100)*xMax},${yMax-(elm.y*yMax)}`
+      })
+      result=`${result} ${xMax},${yMax}`
+      return result
+    }
+
+    const test = polygonize(membershipFunction('trapezoid', [10,20,30,40]),gridWidth,gridHeight)
+    const test2 = polygonize(membershipFunction('grade', [0,10]),gridWidth,gridHeight)
+    const test3 = polygonize(membershipFunction('reverse', [0,10]),gridWidth,gridHeight)
+    const test4 = polygonize(membershipFunction('triangle', [0,50,100]),gridWidth,gridHeight)
+    //const test5 = polygonize(membershipFunction('sigmoid', [10,20]),gridWidth,gridHeight) //broken
+
     const pos = reactive({
+      padding:padding,
       viewBox: {
         x: 0,
         y: 0,
@@ -48,14 +117,14 @@ export default {
           y1: padding + gridHeight,
           y2: padding - offset
         },
-        marker:[
+        marker: [
           {
-            line:{x1:padding,x2:padding-offset,y1:padding+gridHeight,y2:padding+gridHeight},
-            label:{x:1, y:padding+gridHeight+4, text:"0"}
+            line: {x1: padding, x2: padding - offset, y1: padding + gridHeight, y2: padding + gridHeight},
+            label: {x: 1, y: padding + gridHeight + 4, text: "0"}
           },
           {
-            line:{x1:padding,x2:padding-offset,y1:padding,y2:padding},
-            label:{x:1, y:padding+4, text:"1"}
+            line: {x1: padding, x2: padding - offset, y1: padding, y2: padding},
+            label: {x: 1, y: padding + 4, text: "1"}
           },
         ]
       },
@@ -66,20 +135,20 @@ export default {
           y1: padding + gridHeight,
           y2: padding + gridHeight
         },
-        marker:[
+        marker: [
           {
-            line:{x1:padding,x2:padding,y1:padding+gridHeight,y2:padding+gridHeight+offset},
-            label:{x:padding-4, y:2*padding+gridHeight, text:"0"}
+            line: {x1: padding, x2: padding, y1: padding + gridHeight, y2: padding + gridHeight + offset},
+            label: {x: padding - 4, y: 2 * padding + gridHeight, text: "0"}
           },
           {
-            line:{x1:padding+gridWidth,x2:padding+gridWidth,y1:padding+gridHeight,y2:padding+gridHeight+offset},
-            label:{x:padding+gridWidth-4, y:2*padding+gridHeight, text:"1"}
+            line: {x1: padding + gridWidth, x2: padding + gridWidth, y1: padding + gridHeight, y2: padding + gridHeight + offset},
+            label: {x: padding + gridWidth - 12, y: 2 * padding + gridHeight, text: "100"}
           },
         ]
       }
     })
 
-    return {pos}
+    return {pos,test,test2,test3,test4}
   }
 }
 </script>
