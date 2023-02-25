@@ -30,6 +30,7 @@
             </v-col>
           </v-row>
         </v-container>
+        <membership-function-editor></membership-function-editor>
       </v-card-text>
       <v-card-actions>
         <v-btn type="submit" variant="outlined" @click="save">
@@ -48,9 +49,11 @@
 import {reactive} from "vue";
 import {FUZZY_MEMBERSHIP_FUNCTION_TYPE, VARIABLE_SOURCES} from "../../constants";
 import {useStore} from "vuex";
+import MembershipFunctionEditor from "@/components/MembershipFunctionEditor.vue";
 
 export default {
   name: "VariableEditor",
+  components: {MembershipFunctionEditor},
   props: {
     item: Object,
     new: Boolean
