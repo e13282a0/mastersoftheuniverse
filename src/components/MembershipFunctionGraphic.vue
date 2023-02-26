@@ -44,7 +44,7 @@ import Triangle from "es6-fuzz/lib/curve/triangle";
 import Sigmoid from "es6-fuzz/lib/curve/sigmoid";
 
 export default {
-  name: "MembershipFunctionEditor",
+  name: "MembershipFunctionGraphic",
   props:{
     modelValue:Array
   },
@@ -60,6 +60,10 @@ export default {
     const save=emit('update:modelValue',value)
 
     const makeArrayForFunction = function (type, arr) {
+      if (!Array.isArray(arr)) {
+        console.log("not array")
+        return false
+      }
       //const constant=[0]
       //const grade=[0,10]
       //const reverseGrade=[0,10]
@@ -89,6 +93,7 @@ export default {
           break
 
       }
+
       return [...Array(101).keys()].map(function (elm) {
         return {
           x: elm,
@@ -98,6 +103,10 @@ export default {
     }
 
     const polygonize=function(arr, xMax, yMax){
+      if (!Array.isArray(arr)) {
+        console.log("not array")
+        return false
+      }
       let result =`0,${yMax}`
       arr.forEach(function(elm){
         result=`${result} ${(elm.x/100)*xMax},${yMax-(elm.y*yMax)}`
@@ -105,14 +114,16 @@ export default {
       result=`${result} ${xMax},${yMax}`
       return result
     }
+    // eslint-disable-next-line no-debugger
 
-    const membershipFunctions=reactive(value.map(function(elm){
-      return {
-        type:elm.type,
-        values:elm.values,
-        polygon:polygonize(makeArrayForFunction(elm.type, elm.values,gridWidth,gridHeight))
-      }
-    }))
+    const membershipFunctions= Array.isArray(value)?
+      reactive(value.map(function(elm){
+        return {
+          type:elm.type,
+          values:elm.values,
+          polygon:polygonize(makeArrayForFunction(elm.type, elm.values,gridWidth,gridHeight))
+        }
+      })):reactive([])
 
     // const test = polygonize(membershipFunction('trapezoid', [10,20,30,40]),gridWidth,gridHeight)
     // const test2 = polygonize(membershipFunction('grade', [0,10]),gridWidth,gridHeight)

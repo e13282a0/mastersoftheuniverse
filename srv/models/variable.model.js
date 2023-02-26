@@ -11,6 +11,7 @@ let VariableSchema = new Schema({
     max:Number,
     functions:[
         {
+            name:String,
             type: FUZZY_MEMBERSHIP_FUNCTION_TYPE,
             values:[Number]
         }
