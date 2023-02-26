@@ -32,7 +32,7 @@
     <tr v-for="item in variables" :key="item.name">
       <td>{{ item.name }}</td>
       <td>{{ item.source }}</td>
-      <td>{{ item.variable }}</td>
+      <td>{{ item.variable  }}</td>
       <td>{{ item.min }}</td>
       <td>{{ item.max }}</td>
       <td></td>

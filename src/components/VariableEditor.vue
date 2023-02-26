@@ -9,6 +9,7 @@
         </div>
       </v-card-item>
       <v-card-text>
+        <!-- Main values -->
         <v-container>
           <v-row>
             <v-col>
@@ -30,7 +31,36 @@
             </v-col>
           </v-row>
         </v-container>
-        <membership-function-editor></membership-function-editor>
+        <!-- graphical display -->
+        <membership-function-editor v-model="edited.functions"></membership-function-editor>
+        <!-- edit membership function -->
+        <v-table fixed-header  density="compact">
+          <template v-slot:bottom>
+            <v-toolbar density="compact">
+              <v-spacer />
+              <v-btn @click="newItem">
+                <v-icon>mdi-plus-box</v-icon>
+                New
+              </v-btn>
+            </v-toolbar>
+          </template>
+          <thead>
+          <tr>
+            <th class="text-left">type</th>
+            <th class="text-left">values</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="item in edited.functions" :key="item.name">
+            <td>{{ item.type }}</td>
+            <td></td>
+            <td>
+              <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
+            </td>
+          </tr>
+          </tbody>
+        </v-table>
       </v-card-text>
       <v-card-actions>
         <v-btn type="submit" variant="outlined" @click="save">
@@ -61,7 +91,7 @@ export default {
   emits: [ 'close'],
   setup(props,{emit}) {
     // make working copy
-    const edited = reactive(props.new ? {min:0, max:100, source:VARIABLE_SOURCES[0]} : structuredClone(props.item))
+    const edited = reactive(props.new ? {min:0, max:100, source:VARIABLE_SOURCES[0],functions:[]} : structuredClone(props.item))
     const rules = {
       name: [
         v => !!v || 'Name is required',

@@ -22,10 +22,13 @@
 
     <!-- polygons -->
     <g :style="`transform: translate(${pos.padding}px, ${pos.padding}px)`">
-      <polygon :points="test" fill="none" stroke="#ccc" stroke-width="2" />
+      <g :key="`membershipFunction${index}`" v-for="(membershipFunction,index) in membershipFunctions">
+        <polygon :points="membershipFunction.polygon" fill="none" stroke="#ccc" stroke-width="2" />
+      </g>
+      <!--<polygon :points="test" fill="none" stroke="#ccc" stroke-width="2" />
       <polygon :points="test2" fill="none" stroke="#ccc" stroke-width="2" />
       <polygon :points="test3" fill="none" stroke="#ccc" stroke-width="2" />
-      <polygon :points="test4" fill="none" stroke="#ccc" stroke-width="2" />
+      <polygon :points="test4" fill="none" stroke="#ccc" stroke-width="2" />-->
     </g>
   </svg>
 </template>
@@ -42,17 +45,24 @@ import Sigmoid from "es6-fuzz/lib/curve/sigmoid";
 
 export default {
   name: "MembershipFunctionEditor",
-  setup() {
+  props:{
+    modelValue:Array
+  },
+  emits:['update:modelValue'],
+  setup(props, {emit}) {
+    // grid configuration
     const gridWidth = 800
     const gridHeight = gridWidth / 4
     const padding = 20
     const offset = 8
 
+    const value=structuredClone(props.modelValue)
+    const save=emit('update:modelValue',value)
 
-    const membershipFunction = function (type, arr) {
+    const makeArrayForFunction = function (type, arr) {
       //const constant=[0]
       //const grade=[0,10]
-      //const reverseGrade=[0,10] ??
+      //const reverseGrade=[0,10]
       //const trapezoid=[0,10,20,30]
       //const triangle=[10,20,30]
       //const sigmoid=[0,10]
@@ -96,11 +106,18 @@ export default {
       return result
     }
 
-    const test = polygonize(membershipFunction('trapezoid', [10,20,30,40]),gridWidth,gridHeight)
-    const test2 = polygonize(membershipFunction('grade', [0,10]),gridWidth,gridHeight)
-    const test3 = polygonize(membershipFunction('reverse', [0,10]),gridWidth,gridHeight)
-    const test4 = polygonize(membershipFunction('triangle', [0,50,100]),gridWidth,gridHeight)
-    //const test5 = polygonize(membershipFunction('sigmoid', [10,20]),gridWidth,gridHeight) //broken
+    const membershipFunctions=reactive(value.map(function(elm){
+      return {
+        type:elm.type,
+        values:elm.values,
+        polygon:polygonize(makeArrayForFunction(elm.type, elm.values,gridWidth,gridHeight))
+      }
+    }))
+
+    // const test = polygonize(membershipFunction('trapezoid', [10,20,30,40]),gridWidth,gridHeight)
+    // const test2 = polygonize(membershipFunction('grade', [0,10]),gridWidth,gridHeight)
+    // const test3 = polygonize(membershipFunction('reverse', [0,10]),gridWidth,gridHeight)
+    // const test4 = polygonize(membershipFunction('triangle', [0,50,100]),gridWidth,gridHeight)
 
     const pos = reactive({
       padding:padding,
@@ -148,7 +165,7 @@ export default {
       }
     })
 
-    return {pos,test,test2,test3,test4}
+    return {pos,membershipFunctions,save}
   }
 }
 </script>
