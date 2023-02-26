@@ -1,148 +1,159 @@
 <template>
-  <v-form @submit. >
-    <v-card class="mx-auto" max-width="800">
-      <v-card-item>
-        <div>
-          <div class="text-overline mb-1">
-            Edit Variable
+  <q-card class="my-card bg-white" style="max-width: 1000px">
+    <q-card-section>
+      <div class="text-h6">Edit Variable</div>
+    </q-card-section>
+
+    <!-- Main values -->
+    <q-card-section>
+      <div class="q-pa-md">
+        <div class="row q-gutter-xs">
+          <div class="col">
+            <q-input v-model="edited.name" label="Name" dense/>
+          </div>
+          <div class="col">
+            <q-select v-model="edited.source" :options="VARIABLE_SOURCES" label="Source" stack-label dense options-dense/>
+          </div>
+          <div class="col">
+            <q-input v-model="edited.variable" label="Variable" dense/>
+          </div>
+          <div class="col">
+            <q-input v-model="edited.min" label="Min" dense/>
+          </div>
+          <div class="col">
+            <q-input v-model="edited.max" label="Max" dense/>
           </div>
         </div>
-      </v-card-item>
-      <v-card-text>
-        <!-- Main values -->
-        <v-container dense>
-          <v-row dense>
-            <v-col cols="4">
-              <v-text-field label="Name" v-model="edited.name" :rules="rules.name"/>
-            </v-col>
-            <v-col cols="4">
-              <v-combobox label="Source" v-model="edited.source" :items="VARIABLE_SOURCES" :rules="rules.source"/>
-            </v-col>
-            <v-col cols="4">
-              <v-text-field label="Variable" v-model="edited.variable" :rules="rules.variable"/>
-            </v-col>
-          </v-row>
-          <v-row dense>
-            <v-col cols="4">
-              <v-text-field label="Min" v-model="edited.min" :rules="rules.min"/>
-            </v-col>
-            <v-col cols="4">
-              <v-text-field label="Max" v-model="edited.max" :rules="rules.max"/>
-            </v-col>
-          </v-row>
-        </v-container>
-        <!-- graphical display -->
-        <membership-function-graphic v-model="edited.functions"></membership-function-graphic>
-        <!-- edit membership function -->
-        <v-table fixed-header  density="compact">
-          <template v-slot:bottom>
-            <v-toolbar density="compact">
-              <v-spacer />
-              <v-btn @click="newMembershipFunction">
-                <v-icon>mdi-plus-box</v-icon>
-                New
-              </v-btn>
-            </v-toolbar>
-          </template>
-          <thead>
-          <tr>
-            <th class="text-left">name</th>
-            <th class="text-left">type</th>
-            <th class="text-left">values</th>
-            <th></th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr v-for="(item,index) in edited.functions" :key="item.name">
-            <td @click="alert('test')">{{item.name}}</td>
-            <td>{{item.type}}</td>
-            <td></td>
-            <td>
-              <v-icon small @click="deleteMembershipFunction(index)">mdi-delete</v-icon>
-            </td>
-          </tr>
-          </tbody>
-        </v-table>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn type="submit" variant="outlined" @click="save">
-          Save
-        </v-btn>
-        <v-btn variant="outlined" @click="cancel">
-          Cancel
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-form>
+      </div>
+    </q-card-section>
+
+    <!-- graphical display -->
+    <q-card-section>
+      <membership-function-graphic v-model="edited.functions"></membership-function-graphic>
+    </q-card-section>
+
+    <!-- membership functions -->
+    <q-card-section>
+      <q-markup-table flat dense square>
+        <thead>
+        <tr>
+          <th class="text-left">name</th>
+          <th class="text-left">type</th>
+          <th class="text-left">values</th>
+          <th style="width: 50px"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="(item,index) in edited.functions" :key="item.name">
+          <td>{{ item.name }}</td>
+          <td>{{ item.type }}</td>
+          <td>{{ item.values }}</td>
+          <td>
+            <q-btn flat round size="10px">
+              <q-icon @click="editMembershipFunction(index)" name="mdi-pencil"/>
+            </q-btn>
+            <q-btn flat round size="10px">
+              <q-icon @click="deleteMembershipFunction(index)" name="mdi-delete"/>
+            </q-btn>
+          </td>
+        </tr>
+        </tbody>
+      </q-markup-table>
+    </q-card-section>
+    <q-card-actions>
+      <q-space />
+      <q-btn @click="newMembershipFunction" flat><q-icon name="mdi-plus" />New</q-btn>
+    </q-card-actions>
+    <q-separator dark/>
+    <q-card-actions>
+      <q-space/>
+      <q-btn flat label="Save" type="submit" color="primary" @click="save"/>
+      <q-btn flat label="Cancel" type="reset" color="primary" @click="cancel" class="q-ml-sm"/>
+    </q-card-actions>
+  </q-card>
+
+  <q-dialog v-model="state.msfDialog" width="800" persistent>
+    <membership-function-editor v-model="state.activeMembershipFunction" @save="saveMembershipFunction" @close="state.msfDialog=false"/>
+  </q-dialog>
+
 </template>
 
 <script>
 
 import {reactive} from "vue";
 import {FUZZY_MEMBERSHIP_FUNCTION_TYPE, VARIABLE_SOURCES} from "../../constants";
-import {useStore} from "vuex";
 import MembershipFunctionGraphic from "@/components/MembershipFunctionGraphic.vue";
+import {useStore} from "vuex";
+import MembershipFunctionEditor from "@/components/MembershipFunctionEditor.vue";
 
 export default {
   name: "VariableEditor",
-  components: {MembershipFunctionGraphic},
+  components: {MembershipFunctionEditor, MembershipFunctionGraphic},
   props: {
     item: Object,
     new: Boolean
   },
-  emits: [ 'close'],
-  setup(props,{emit}) {
-    // make working copy
-    const edited = reactive(props.new ? {min:0, max:100, source:VARIABLE_SOURCES[0],functions:[]} : structuredClone(props.item))
-    const rules = {
-      name: [
-        v => !!v || 'Name is required',
-        v => (v && v.length <= 100) || 'Name must be less than 100 characters',
-      ],
-      variable: [
-        v => !!v || 'Variable is required',
-        v => (v && v.length <= 100) || 'Variable must be less than 100 characters',
-      ],
-      source: [
-        v => !!v || 'Source is required'
-      ],
-      min: [
-        v => /[0-9]+/.test(v) || 'Must be numeric',
-      ],
-      max: [
-        v => /[0-9]+/.test(v) || 'Must be numeric',
-      ]
-    }
+  emits: ['close'],
+  setup: function (props, {emit}) {
     const store = useStore()
+
+    const state = reactive({
+      msfDialog: false,
+      activeMembershipFunction: {},
+      activeMembershipFunctionIndex:-1
+    })
+
+    // make working copy
+    const edited = reactive(props.new ? {min: 0, max: 100, source: VARIABLE_SOURCES[0], functions: []} : structuredClone(props.item))
 
     const save = function () {
       if (props.new)
-        store.dispatch('add',{target:'variables',data:edited})
+        store.dispatch('add', {target: 'variables', data: edited})
       else
-        store.dispatch('update',{target:'variables',data:edited})
+        store.dispatch('update', {target: 'variables', data: edited})
 
       emit('close')
     }
+
     const cancel = function () {
       emit('close')
     }
 
-    const newMembershipFunction = function() {
-      edited.functions.push({})
+    const newMembershipFunction = function () {
+      state.activeMembershipFunction = {}
+      state.activeMembershipFunctionIndex = -1
+      state.msfDialog = true
     }
-    const deleteMembershipFunction = function(index) {
+
+    const deleteMembershipFunction = function (index) {
       if (index > -1) {
         edited.functions.splice(index, 1);
       }
     }
 
+    const editMembershipFunction = function (index) {
+      state.activeMembershipFunctionIndex=index
+      state.activeMembershipFunction = edited.functions[index]
+      state.msfDialog = true
+    }
+
+    const saveMembershipFunction = function (item) {
+      if(state.activeMembershipFunctionIndex>-1)
+        edited.functions[state.activeMembershipFunctionIndex]=item
+      else
+        edited.functions.push(item)
+      state.msfDialog = false
+    }
+
     return {
+      state,
       edited,
-      rules,
       save,
       cancel,
       newMembershipFunction,
       deleteMembershipFunction,
+      editMembershipFunction,
+      saveMembershipFunction,
       VARIABLE_SOURCES,
       FUZZY_MEMBERSHIP_FUNCTION_TYPE
     }

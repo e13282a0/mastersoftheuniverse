@@ -1,44 +1,63 @@
 <template>
-  <v-app>
-    <!-- progressbar -->
-    <v-progress-linear v-if="loading" indeterminate color="cyan" />
-    <v-navigation-drawer app expand-on-hover rail permanent>
-      <v-list>
-        <v-list-item-media>
-          <v-img :src="require('./assets/Masters_of_the_Universe_Logo_Classic.jpg')"/>
-        </v-list-item-media>
-      </v-list>
+  <q-layout view="lHh Lpr lFf">
+    <q-header elevated class="bg-grey-6">
+      <q-toolbar>
+        <q-btn
+            flat
+            dense
+            round
+            @click="toggleLeftDrawer"
+            aria-label="Menu"
+            icon="menu"
+        />
 
-      <v-divider></v-divider>
+        <q-toolbar-title>
+          Masters of the Universe
+        </q-toolbar-title>
+      </q-toolbar>
+    </q-header>
+    <q-linear-progress v-if="loading" indeterminate color="secondary" class="q-mt-sm" />
+    <q-drawer
+        v-model="leftDrawerOpen"
+        show-if-above
+        class="bg-grey-8"
+    >
+      <q-img :src="require('./assets/Masters_of_the_Universe_Logo_Classic.jpg')"/>
 
-      <v-list density="compact" nav>
-        <v-list-item prepend-icon="mdi-folder" title="My Files" to="/" link></v-list-item>
-        <v-list-item prepend-icon="mdi-account-multiple" title="Shared with me" to="/about" link></v-list-item>
-        <v-list-item prepend-icon="mdi-variable" title="Variables" to="/variables" link></v-list-item>
-        <v-list-item prepend-icon="mdi-calculator-variant-outline" title="Rule Sets" link></v-list-item>
-      </v-list>
-    </v-navigation-drawer>
+      <q-separator />
+      <q-list dark>
+        <q-item clickable to="/variables">
+          <q-item-section avatar>
+            <q-icon name="mdi-variable" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Variables</q-item-label>
+          </q-item-section>
+        </q-item>
 
-    <!-- Sizes your content based upon application components -->
-    <v-main>
-      <!-- Provides the application the proper gutter -->
-      <v-container fluid>
-        <!-- If using vue-router -->
-        <router-view></router-view>
-      </v-container>
-    </v-main>
+        <q-item clickable to="/about">
+          <q-item-section avatar>
+            <q-icon name="functions" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Rule Sets</q-item-label>
+          </q-item-section>
+        </q-item>
 
-    <v-footer app>
-      <!-- -->
-    </v-footer>
-  </v-app>
+      </q-list>
+    </q-drawer>
 
+    <q-page-container>
+      <router-view />
+    </q-page-container>
+  </q-layout>
 
 
 </template>
 <script>
 //import { connect } from "precompiled-mqtt"
 import {useStore} from "vuex";
+import {ref} from "vue";
 export default {
   setup() {
     // const client  = connect('mqtt://localhost:8083')
@@ -60,21 +79,21 @@ export default {
     const store = useStore()
     store.dispatch("index",{target:"variables"})
 
+    const leftDrawerOpen = ref(false)
+
     return {
       //"MQTTClient":client,
-      loading:store.state.loading
+      loading:store.state.loading,
+      leftDrawerOpen,
+      toggleLeftDrawer () {
+        leftDrawerOpen.value = !leftDrawerOpen.value
+      }
     }
   },
 }
 </script>
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+
 
 nav {
   padding: 30px;
@@ -85,7 +104,4 @@ nav a {
   color: #2c3e50;
 }
 
-nav a.router-link-exact-active {
-  color: #42b983;
-}
 </style>

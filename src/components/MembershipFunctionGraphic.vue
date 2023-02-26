@@ -25,10 +25,6 @@
       <g :key="`membershipFunction${index}`" v-for="(membershipFunction,index) in membershipFunctions">
         <polygon :points="membershipFunction.polygon" fill="none" stroke="#ccc" stroke-width="2" />
       </g>
-      <!--<polygon :points="test" fill="none" stroke="#ccc" stroke-width="2" />
-      <polygon :points="test2" fill="none" stroke="#ccc" stroke-width="2" />
-      <polygon :points="test3" fill="none" stroke="#ccc" stroke-width="2" />
-      <polygon :points="test4" fill="none" stroke="#ccc" stroke-width="2" />-->
     </g>
   </svg>
 </template>
@@ -45,9 +41,7 @@ import Sigmoid from "es6-fuzz/lib/curve/sigmoid";
 
 export default {
   name: "MembershipFunctionGraphic",
-  props:{
-    modelValue:Array
-  },
+  props:['modelValue'],
   emits:['update:modelValue'],
   setup(props, {emit}) {
     // grid configuration
@@ -59,39 +53,34 @@ export default {
     const value=structuredClone(props.modelValue)
     const save=emit('update:modelValue',value)
 
-    const makeArrayForFunction = function (type, arr) {
+    const makeArrayForFunction = function (type, arrString) {
+      const arr=arrString.split(',')
+
       if (!Array.isArray(arr)) {
         console.log("not array")
         return false
       }
-      //const constant=[0]
-      //const grade=[0,10]
-      //const reverseGrade=[0,10]
-      //const trapezoid=[0,10,20,30]
-      //const triangle=[10,20,30]
-      //const sigmoid=[0,10]
 
       let typeObject
       switch (type) {
         case 'constant':
-          typeObject = new Constant(arr[0])
+          typeObject = new Constant(parseInt([0]))
           break
         case 'grade':
-          typeObject = new Grade(arr[0], arr[1])
+          typeObject = new Grade(parseInt(arr[0]), parseInt(arr[1]))
           break
         case 'reverse':
-          typeObject = new ReverseGrade(arr[0], arr[1])
+          typeObject = new ReverseGrade(parseInt(arr[0]), parseInt(arr[1]))
           break
         case 'trapezoid':
-          typeObject = new Trapezoid(arr[0], arr[1], arr[2], arr[3])
+          typeObject = new Trapezoid(parseInt(arr[0]), parseInt(arr[1]), parseInt(arr[2]), parseInt(arr[3]))
           break
         case 'triangle':
-          typeObject = new Triangle(arr[0], arr[1], arr[2])
+          typeObject = new Triangle(parseInt(arr[0]), parseInt(arr[1]), parseInt(arr[2]))
           break
         case 'sigmoid':
-          typeObject = new Sigmoid(arr[0], arr[1])
+          typeObject = new Sigmoid(parseInt(arr[0]), parseInt(arr[1]))
           break
-
       }
 
       return [...Array(101).keys()].map(function (elm) {
@@ -102,33 +91,31 @@ export default {
       })
     }
 
-    const polygonize=function(arr, xMax, yMax){
+
+    const polygonize=function(arr){
       if (!Array.isArray(arr)) {
         console.log("not array")
         return false
       }
-      let result =`0,${yMax}`
+      let result =`0,${gridHeight}`
       arr.forEach(function(elm){
-        result=`${result} ${(elm.x/100)*xMax},${yMax-(elm.y*yMax)}`
+        result=`${result} ${(elm.x/100)*gridWidth},${gridHeight-(elm.y*gridHeight)}`
       })
-      result=`${result} ${xMax},${yMax}`
+      result=`${result} ${gridWidth},${gridHeight}`
+
       return result
     }
-    // eslint-disable-next-line no-debugger
 
     const membershipFunctions= Array.isArray(value)?
       reactive(value.map(function(elm){
         return {
+          name:elm.name,
           type:elm.type,
           values:elm.values,
-          polygon:polygonize(makeArrayForFunction(elm.type, elm.values,gridWidth,gridHeight))
+          polygon:polygonize(makeArrayForFunction(elm.type, elm.values))
         }
       })):reactive([])
 
-    // const test = polygonize(membershipFunction('trapezoid', [10,20,30,40]),gridWidth,gridHeight)
-    // const test2 = polygonize(membershipFunction('grade', [0,10]),gridWidth,gridHeight)
-    // const test3 = polygonize(membershipFunction('reverse', [0,10]),gridWidth,gridHeight)
-    // const test4 = polygonize(membershipFunction('triangle', [0,50,100]),gridWidth,gridHeight)
 
     const pos = reactive({
       padding:padding,

@@ -1,52 +1,54 @@
 <template>
-  <v-toolbar dark  density="compact">
-    <v-toolbar-title>Variables</v-toolbar-title>
-    <v-spacer />
-    <v-text-field hide-details prepend-icon="mdi-magnify" single-line />
-    <v-btn icon>
-      <v-icon>mdi-export</v-icon>
-    </v-btn>
-  </v-toolbar>
-  <v-table fixed-header  density="compact">
-    <template v-slot:bottom>
-      <v-toolbar density="compact">
-        <v-spacer />
-        <v-btn @click="newItem">
-          <v-icon>mdi-plus-box</v-icon>
-          New
-        </v-btn>
-      </v-toolbar>
-    </template>
-    <thead>
-      <tr>
-        <th class="text-left">name</th>
-        <th class="text-left">source</th>
-        <th class="text-left">variable</th>
-        <th class="text-left">min</th>
-        <th class="text-left">max</th>
-        <th class="text-left">membership functions</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-    <tr v-for="item in variables" :key="item.name">
-      <td>{{ item.name }}</td>
-      <td>{{ item.source }}</td>
-      <td>{{ item.variable  }}</td>
-      <td>{{ item.min }}</td>
-      <td>{{ item.max }}</td>
-      <td></td>
-      <td>
-        <v-icon small @click="editItem(item)">mdi-pencil</v-icon>
-        <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
-      </td>
-    </tr>
-    </tbody>
-  </v-table>
+  <q-card flat>
+    <q-card-section>
+             <div class="text-h6">Variables</div>
+     </q-card-section>
+
+    <q-card-section>
+      <q-markup-table flat dense square>
+        <thead>
+        <tr>
+          <th class="text-left">name</th>
+          <th class="text-left">source</th>
+          <th class="text-left">variable</th>
+          <th class="text-left">min</th>
+          <th class="text-left">max</th>
+          <th class="text-left">membership functions</th>
+          <th style="width: 50px"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="item in variables" :key="item.name">
+          <td>{{ item.name }}</td>
+          <td>{{ item.source }}</td>
+          <td>{{ item.variable  }}</td>
+          <td>{{ item.min }}</td>
+          <td>{{ item.max }}</td>
+          <td></td>
+          <td>
+            <q-btn flat round size="10px">
+              <q-icon @click="editItem(item)" name="mdi-pencil"/>
+            </q-btn>
+            <q-btn flat round size="10px">
+              <q-icon @click="deleteItem(item)" name="mdi-delete"/>
+            </q-btn>
+          </td>
+        </tr>
+        </tbody>
+      </q-markup-table>
+
+    </q-card-section>
+
+    <q-card-actions>
+      <q-space />
+      <q-btn @click="newItem" flat><q-icon name="mdi-plus" />New</q-btn>
+    </q-card-actions>
+  </q-card>
+
   <!-- Edit Dialog -->
-  <v-dialog v-model="state.dialog" width="800" persistent>
+  <q-dialog v-model="state.dialog" width="800" persistent>
     <variable-editor :item="state.editItem" :new="state.newItem" @close="state.dialog=false"/>
-  </v-dialog>
+  </q-dialog>
 </template>
 
 <script>
@@ -77,12 +79,9 @@ export default {
       state.dialog=true
     }
 
-    // eslint-disable-next-line
     const deleteItem=function(item){
       store.dispatch("delete", {target:"variables", id:item._id})
     }
-
-
 
     return {
       state,

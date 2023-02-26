@@ -1,6 +1,8 @@
 const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
-  transpileDependencies: true,
+  transpileDependencies: [
+    'quasar'
+  ],
   //devServer: {
   //  proxy: "http://localhost:3000"
   //},
@@ -10,6 +12,10 @@ module.exports = defineConfig({
     express: {
       shouldServeApp: true,
       serverDir: './srv'
+    },
+    quasar: {
+      importStrategy: 'kebab',
+      rtlSupport: false
     }
   }
 })
