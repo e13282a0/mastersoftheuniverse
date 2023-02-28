@@ -51,14 +51,13 @@ export default {
     const offset = 8
 
     const value=structuredClone(props.modelValue)
-    const save=emit('update:modelValue',value)
+    const singleValue = !Array.isArray(value)
+    const save=emit('update:modelValue',singleValue?value[0]:value)
 
     const makeArrayForFunction = function (type, arrString) {
       const arr=arrString.split(',')
-
       if (!Array.isArray(arr)) {
-        console.log("not array")
-        return false
+        return ""
       }
 
       let typeObject
@@ -91,10 +90,8 @@ export default {
       })
     }
 
-
     const polygonize=function(arr){
       if (!Array.isArray(arr)) {
-        console.log("not array")
         return false
       }
       let result =`0,${gridHeight}`
@@ -102,20 +99,18 @@ export default {
         result=`${result} ${(elm.x/100)*gridWidth},${gridHeight-(elm.y*gridHeight)}`
       })
       result=`${result} ${gridWidth},${gridHeight}`
-
       return result
     }
 
-    const membershipFunctions= Array.isArray(value)?
-      reactive(value.map(function(elm){
+    let _value = singleValue?[value]:value
+    const membershipFunctions = reactive(_value.map(function(elm){
         return {
           name:elm.name,
           type:elm.type,
           values:elm.values,
           polygon:polygonize(makeArrayForFunction(elm.type, elm.values))
         }
-      })):reactive([])
-
+      }))
 
     const pos = reactive({
       padding:padding,
