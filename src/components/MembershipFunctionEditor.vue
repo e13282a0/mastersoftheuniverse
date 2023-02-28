@@ -12,19 +12,18 @@
             <q-input v-model="edited.name" label="Name" dense/>
           </div>
           <div class="col">
-            <q-select v-model="edited.type" :options="FUZZY_MEMBERSHIP_FUNCTION_TYPE" label="Type" stack-label dense options-dense/>
+            <q-select v-model="edited.type" :options="FUZZY_MEMBERSHIP_FUNCTION_TYPE" label="Type" stack-label dense options-dense @update:model-value="state.updateKey++"/>
           </div>
           <div class="col">
-            <q-input v-model="edited.values" :mask="FUZZY_MEMBERSHIP_FUNCTION_TYPE_MASK[edited.type]" fill-mask label="Values" dense/>
+            <q-input v-model="edited.values" :mask="FUZZY_MEMBERSHIP_FUNCTION_TYPE_MASK[edited.type]" fill-mask label="Values" dense  @update:model-value="state.updateKey++"/>
           </div>
-
         </div>
       </div>
     </q-card-section>
 
     <!-- graphical display -->
     <q-card-section>
-      <membership-function-graphic v-model="edited"></membership-function-graphic>
+      <membership-function-graphic :key="state.updateKey" v-model="edited" />
     </q-card-section>
 
     <q-separator dark/>
@@ -50,7 +49,10 @@ export default {
   emits: ['update:modelValue','close','save'],
   setup(props, {emit}) {
     // make working copy
-    const edited = reactive( structuredClone(props.modelValue))
+    const edited = reactive(structuredClone(props.modelValue))
+    const state = reactive({
+      updateKey:0
+    })
 
     const save = function () {
       emit('update:modelValue',edited)
@@ -64,6 +66,7 @@ export default {
       edited,
       save,
       cancel,
+      state,
       VARIABLE_SOURCES,
       FUZZY_MEMBERSHIP_FUNCTION_TYPE,
       FUZZY_MEMBERSHIP_FUNCTION_TYPE_MASK

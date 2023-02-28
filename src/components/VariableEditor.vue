@@ -29,7 +29,7 @@
 
     <!-- graphical display -->
     <q-card-section>
-      <membership-function-graphic v-model="edited.functions"></membership-function-graphic>
+      <membership-function-graphic  :key="state.updateKey" v-model="edited.functions" @update:model-value="state.updateKey++"/>
     </q-card-section>
 
     <!-- membership functions -->
@@ -73,7 +73,7 @@
   </q-card>
 
   <q-dialog v-model="state.msfDialog" width="800" persistent>
-    <membership-function-editor v-model="state.activeMembershipFunction" @save="saveMembershipFunction" @close="state.msfDialog=false"/>
+    <membership-function-editor v-model="state.activeMembershipFunction" @update:model-value="state.updateKey++" @save="saveMembershipFunction" @close="state.msfDialog=false"/>
   </q-dialog>
 
 </template>
@@ -100,7 +100,8 @@ export default {
     const state = reactive({
       msfDialog: false,
       activeMembershipFunction: {},
-      activeMembershipFunctionIndex:-1
+      activeMembershipFunctionIndex:-1,
+      updateKey:0
     })
 
     // make working copy
@@ -129,6 +130,7 @@ export default {
       if (index > -1) {
         edited.functions.splice(index, 1);
       }
+      state.updateKey++
     }
 
     const editMembershipFunction = function (index) {
@@ -143,6 +145,7 @@ export default {
       else
         edited.functions.push(item)
       state.msfDialog = false
+      state.updateKey++
     }
 
     return {

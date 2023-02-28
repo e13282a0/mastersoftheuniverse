@@ -42,7 +42,7 @@ import Sigmoid from "es6-fuzz/lib/curve/sigmoid";
 export default {
   name: "MembershipFunctionGraphic",
   props:['modelValue'],
-  emits:['update:modelValue'],
+  emits:['update:modelValue','save'],
   setup(props, {emit}) {
     // grid configuration
     const gridWidth = 800
@@ -52,30 +52,31 @@ export default {
 
     const value=structuredClone(props.modelValue)
     const singleValue = !Array.isArray(value)
-    const save=emit('update:modelValue',singleValue?value[0]:value)
 
     const makeArrayForFunction = function (type, arrString) {
-      const arr=arrString.split(',')
-      if (!Array.isArray(arr)) {
+      if (typeof(arrString)=="undefined" || !arrString.includes(','))
         return ""
-      }
+      const arr=arrString.split(',')
+      if (!Array.isArray(arr))
+        return ""
+
 
       let typeObject
       switch (type) {
         case 'constant':
-          typeObject = new Constant(parseInt([0]))
+          typeObject = new Constant(parseInt(arr[0]))
           break
         case 'grade':
-          typeObject = new Grade(parseInt(arr[0]), parseInt(arr[1]))
+          typeObject = new Grade(parseInt(arr[0]), parseInt(arr[1]), parseInt(arr[2]),parseInt(arr[3]))
           break
         case 'reverse':
-          typeObject = new ReverseGrade(parseInt(arr[0]), parseInt(arr[1]))
+          typeObject = new ReverseGrade(parseInt(arr[0]), parseInt(arr[1]), parseInt(arr[2]),parseInt(arr[3]))
           break
         case 'trapezoid':
           typeObject = new Trapezoid(parseInt(arr[0]), parseInt(arr[1]), parseInt(arr[2]), parseInt(arr[3]))
           break
         case 'triangle':
-          typeObject = new Triangle(parseInt(arr[0]), parseInt(arr[1]), parseInt(arr[2]))
+          typeObject = new Triangle(parseInt(arr[0]), parseInt(arr[1]), parseInt(arr[2]),parseInt(arr[3]))
           break
         case 'sigmoid':
           typeObject = new Sigmoid(parseInt(arr[0]), parseInt(arr[1]))
@@ -102,8 +103,8 @@ export default {
       return result
     }
 
-    let _value = singleValue?[value]:value
-    const membershipFunctions = reactive(_value.map(function(elm){
+    let arrValue = singleValue?[value]:value
+    const membershipFunctions = reactive(arrValue.map(function(elm){
         return {
           name:elm.name,
           type:elm.type,
@@ -111,6 +112,10 @@ export default {
           polygon:polygonize(makeArrayForFunction(elm.type, elm.values))
         }
       }))
+    const save= function() {
+      emit('update:modelValue',singleValue?membershipFunctions[0]:membershipFunctions)
+      emit('save',singleValue?membershipFunctions[0]:membershipFunctions)
+    }
 
     const pos = reactive({
       padding:padding,
