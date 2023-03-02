@@ -41,5 +41,5 @@ export const makeColorGradient2 = function(len=50){
     const center = 128;
     const width = 127;
     const frequency = 2.4;
-    makeColorGradient(frequency,frequency,frequency,0,2,4,center,width,len);
+    return makeColorGradient(frequency,frequency,frequency,0,2,4,center,width,len);
 }
