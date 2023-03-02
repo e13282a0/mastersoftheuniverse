@@ -40,6 +40,7 @@
           <th class="text-left">name</th>
           <th class="text-left">type</th>
           <th class="text-left">values</th>
+          <th style="width: 210px">form</th>
           <th style="width: 50px"></th>
         </tr>
         </thead>
@@ -48,6 +49,7 @@
           <td>{{ item.name }}</td>
           <td>{{ item.type }}</td>
           <td>{{ item.values }}</td>
+          <td><membership-function-reduced-graphic :value="item" /></td>
           <td>
             <q-btn flat round size="10px">
               <q-icon @click="editMembershipFunction(index)" name="mdi-pencil"/>
@@ -85,10 +87,11 @@ import {FUZZY_MEMBERSHIP_FUNCTION_TYPE, VARIABLE_SOURCES} from "../../constants"
 import MembershipFunctionGraphic from "@/components/MembershipFunctionGraphic.vue";
 import {useStore} from "vuex";
 import MembershipFunctionEditor from "@/components/MembershipFunctionEditor.vue";
+import MembershipFunctionReducedGraphic from "@/components/MembershipFunctionReducedGraphic.vue";
 
 export default {
   name: "VariableEditor",
-  components: {MembershipFunctionEditor, MembershipFunctionGraphic},
+  components: {MembershipFunctionReducedGraphic, MembershipFunctionEditor, MembershipFunctionGraphic},
   props: {
     item: Object,
     new: Boolean

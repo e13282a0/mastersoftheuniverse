@@ -13,8 +13,8 @@
           <th class="text-left">variable</th>
           <th class="text-left">min</th>
           <th class="text-left">max</th>
-          <th class="text-left">membership functions</th>
-          <th style="width: 50px"></th>
+          <th  style="width: 210px">membership functions</th>
+          <th style="width: 20px"></th>
         </tr>
         </thead>
         <tbody>
@@ -24,7 +24,7 @@
           <td>{{ item.variable  }}</td>
           <td>{{ item.min }}</td>
           <td>{{ item.max }}</td>
-          <td></td>
+          <td><membership-function-reduced-graphic :value="item.functions" /></td>
           <td>
             <q-btn flat round size="10px">
               <q-icon @click="editItem(item)" name="mdi-pencil"/>
@@ -55,10 +55,11 @@
 import {useStore} from "vuex";
 import {computed, reactive} from "vue";
 import VariableEditor from "@/components/VariableEditor.vue";
+import MembershipFunctionReducedGraphic from "@/components/MembershipFunctionReducedGraphic.vue";
 
 export default {
   name: "VariablesView",
-  components: {VariableEditor},
+  components: {MembershipFunctionReducedGraphic, VariableEditor},
   setup() {
     const store = useStore()
     const state=reactive({
