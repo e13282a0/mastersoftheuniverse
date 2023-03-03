@@ -83,7 +83,6 @@
 <script>
 
 import {reactive} from "vue";
-import {FUZZY_MEMBERSHIP_FUNCTION_TYPE, VARIABLE_SOURCES} from "../../constants";
 import MembershipFunctionGraphic from "@/components/MembershipFunctionGraphic.vue";
 import {useStore} from "vuex";
 import MembershipFunctionEditor from "@/components/MembershipFunctionEditor.vue";
@@ -124,7 +123,14 @@ export default {
     }
 
     const newMembershipFunction = function () {
-      state.activeMembershipFunction = {}
+      //create empty default element
+      let draft = {name:'new', type:'', params:{}}
+      Object.keys(FUZZY_MEMBERSHIP_FUNCTIONS).forEach(function(type){
+        FUZZY_MEMBERSHIP_FUNCTIONS[type].forEach(function(param){
+          draft.params[param]=''
+        })
+      })
+      state.activeMembershipFunction = draft
       state.activeMembershipFunctionIndex = -1
       state.msfDialog = true
     }

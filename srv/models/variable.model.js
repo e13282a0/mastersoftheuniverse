@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
-const {VARIABLE_SOURCES} = require("../../constants");
+
 const Schema = mongoose.Schema;
 
 
 let VariableSchema = new Schema({
     name: String,
     variable: String,
-    source:VARIABLE_SOURCES,
+    source:String,
     min:Number,
     max:Number,
     functions:[Object],

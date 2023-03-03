@@ -18,13 +18,8 @@
 <script>
 
 import {reactive} from "vue";
-import Grade from "es6-fuzz/lib/curve/grade";
-import ReverseGrade from "es6-fuzz/lib/curve/reverse-grade";
-import Constant from "es6-fuzz/lib/curve/constant";
-import Trapezoid from "es6-fuzz/lib/curve/trapezoid";
-import Triangle from "es6-fuzz/lib/curve/triangle";
-import Sigmoid from "es6-fuzz/lib/curve/sigmoid";
 import {makeColorGradient1} from "@/mixins/colorgenerator";
+import {getFuzzyObject} from "@/mixins/fuzzyhelper";
 
 export default {
   name: "MembershipFunctionReducedGraphic",
@@ -46,27 +41,7 @@ export default {
       if (!Array.isArray(arr))
         return ""
 
-      let typeObject
-      switch (type) {
-        case 'constant':
-          typeObject = new Constant(parseInt(arr[0]))
-          break
-        case 'grade':
-          typeObject = new Grade(parseInt(arr[0]), parseInt(arr[1]), parseInt(arr[2]),parseInt(arr[3]))
-          break
-        case 'reverse':
-          typeObject = new ReverseGrade(parseInt(arr[0]), parseInt(arr[1]), parseInt(arr[2]),parseInt(arr[3]))
-          break
-        case 'trapezoid':
-          typeObject = new Trapezoid(parseInt(arr[0]), parseInt(arr[1]), parseInt(arr[2]), parseInt(arr[3]))
-          break
-        case 'triangle':
-          typeObject = new Triangle(parseInt(arr[0]), parseInt(arr[1]), parseInt(arr[2]),parseInt(arr[3]))
-          break
-        case 'sigmoid':
-          typeObject = new Sigmoid(parseInt(arr[0]), parseInt(arr[1]))
-          break
-      }
+      let typeObject = getFuzzyObject(type,arr)
 
       return [...Array(101).keys()].map(function (elm) {
         return {
