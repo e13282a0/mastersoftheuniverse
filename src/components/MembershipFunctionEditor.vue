@@ -23,7 +23,7 @@
 
         <div class="row q-gutter-xs" :key="edited.type">
           <div :key="param" v-for="param in FUZZY_MEMBERSHIP_FUNCTIONS[edited.type]" class="col">
-            <q-input v-model="edited.params[param]" :label="param" dense/>
+            <q-input v-model="edited.parameters[param]" :label="param" dense/>
             <!--{{param}}-->
           </div>
 
@@ -45,7 +45,7 @@
 <script>
 import {reactive} from "vue";
 import MembershipFunctionGraphic from "@/components/MembershipFunctionGraphic.vue";
-import {FUZZY_MEMBERSHIP_FUNCTIONS} from "@/mixins/constants";
+import {FUZZY_MEMBERSHIP_FUNCTIONS, VARIABLE_SOURCES} from "@/mixins/constants";
 
 export default {
   name: "MembershipFunctionEditor",
@@ -57,6 +57,8 @@ export default {
   components: {MembershipFunctionGraphic},
   props: {
     modelValue: Object,
+    min:Number,
+    max:Number
   },
   emits: ['update:modelValue','close','save'],
   setup(props, {emit}) {
@@ -80,8 +82,6 @@ export default {
       cancel,
       state,
       VARIABLE_SOURCES,
-      FUZZY_MEMBERSHIP_FUNCTION_TYPE,
-      FUZZY_MEMBERSHIP_FUNCTION_TYPE_MASK
     }
   },
 }

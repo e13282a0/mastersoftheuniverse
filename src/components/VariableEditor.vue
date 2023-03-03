@@ -87,6 +87,7 @@ import MembershipFunctionGraphic from "@/components/MembershipFunctionGraphic.vu
 import {useStore} from "vuex";
 import MembershipFunctionEditor from "@/components/MembershipFunctionEditor.vue";
 import MembershipFunctionReducedGraphic from "@/components/MembershipFunctionReducedGraphic.vue";
+import {FUZZY_MEMBERSHIP_FUNCTION_STEP, FUZZY_MEMBERSHIP_FUNCTIONS, VARIABLE_SOURCES} from "@/mixins/constants";
 
 export default {
   name: "VariableEditor",
@@ -124,10 +125,10 @@ export default {
 
     const newMembershipFunction = function () {
       //create empty default element
-      let draft = {name:'new', type:'', params:{}}
+      let draft = {name:'new', type:'', parameters:{}}
       Object.keys(FUZZY_MEMBERSHIP_FUNCTIONS).forEach(function(type){
         FUZZY_MEMBERSHIP_FUNCTIONS[type].forEach(function(param){
-          draft.params[param]=''
+          draft.parameters[param]=''
         })
       })
       state.activeMembershipFunction = draft
@@ -149,6 +150,11 @@ export default {
     }
 
     const saveMembershipFunction = function (item) {
+      //complete values from variable
+      item.parameters.minValue=edited.min
+      item.parameters.maxValue=edited.max
+      item.parameters.step=FUZZY_MEMBERSHIP_FUNCTION_STEP
+
       if(state.activeMembershipFunctionIndex>-1)
         edited.functions[state.activeMembershipFunctionIndex]=item
       else
@@ -167,7 +173,6 @@ export default {
       editMembershipFunction,
       saveMembershipFunction,
       VARIABLE_SOURCES,
-      FUZZY_MEMBERSHIP_FUNCTION_TYPE
     }
   },
 }
